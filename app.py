@@ -42,6 +42,376 @@ st.markdown("""
 if 'form_submitted' not in st.session_state:
     st.session_state.form_submitted = False
 
+# ========== FUNCTION DEFINITIONS ==========
+def prepare_form_data(patient_name, patient_dob, presenting_complaint,
+                     hpc_when_started, hpc_progression, hpc_severity, hpc_triggers, hpc_relieving, hpc_associated,
+                     pain_start_date, pain_start_time, pain_site, pain_onset,
+                     pain_character, pain_radiation, pain_timing, pain_severity,
+                     pain_exacerbating, pain_relieving, other_complaint_detail,
+                     fever, cough_cold, unwell_contacts, sob, calf_pain, recent_surgery,
+                     travel_history, haemoptysis, malignancy_history, prev_vte, orthopnea,
+                     abdominal_pain, vomiting, loss_consciousness, dizziness,
+                     pmh, drug_history, drug_allergies, family_heart_attack, family_stroke,
+                     family_history_detail, smoking_status, alcohol_use, recreational_drugs,
+                     recreational_drugs_detail, additional_info):
+    """Prepare form data as formatted HTML"""
+    
+    # Prepare boolean values as Yes/No strings
+    fever_str = 'Yes' if fever else 'No'
+    cough_cold_str = 'Yes' if cough_cold else 'No'
+    unwell_contacts_str = 'Yes' if unwell_contacts else 'No'
+    sob_str = 'Yes' if sob else 'No'
+    calf_pain_str = 'Yes' if calf_pain else 'No'
+    recent_surgery_str = 'Yes' if recent_surgery else 'No'
+    travel_history_str = 'Yes' if travel_history else 'No'
+    haemoptysis_str = 'Yes' if haemoptysis else 'No'
+    malignancy_history_str = 'Yes' if malignancy_history else 'No'
+    prev_vte_str = 'Yes' if prev_vte else 'No'
+    orthopnea_str = 'Yes' if orthopnea else 'No'
+    abdominal_pain_str = 'Yes' if abdominal_pain else 'No'
+    vomiting_str = 'Yes' if vomiting else 'No'
+    loss_consciousness_str = 'Yes' if loss_consciousness else 'No'
+    dizziness_str = 'Yes' if dizziness else 'No'
+    family_heart_attack_str = 'Yes' if family_heart_attack else 'No'
+    family_stroke_str = 'Yes' if family_stroke else 'No'
+    
+    # Prepare text fields with defaults
+    pmh_str = pmh if pmh else 'None reported'
+    drug_history_str = drug_history if drug_history else 'None reported'
+    family_history_detail_str = family_history_detail if family_history_detail else 'None reported'
+    additional_info_str = additional_info if additional_info else 'None provided'
+    
+    # Build general HPC section
+    general_hpc_section = f"""
+    <div class="section">
+        <h2>History of Your Complaint</h2>
+        <div class="field">
+            <span class="label">When did it start?</span>
+            <span class="value">{hpc_when_started if hpc_when_started else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">How has it progressed?</span>
+            <span class="value">{hpc_progression if hpc_progression else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">Severity:</span>
+            <span class="value">{hpc_severity if hpc_severity else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">What makes it worse?</span>
+            <span class="value">{hpc_triggers if hpc_triggers else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">What makes it better?</span>
+            <span class="value">{hpc_relieving if hpc_relieving else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">Associated symptoms?</span>
+            <span class="value">{hpc_associated if hpc_associated else 'None reported'}</span>
+        </div>
+    </div>
+    """
+    
+    # Build HPC section based on complaint type
+    if presenting_complaint == "Chest Pain":
+        pain_site_str = ', '.join(pain_site) if pain_site else 'Not specified'
+        pain_character_str = ', '.join(pain_character) if pain_character else 'Not specified'
+        pain_radiation_str = ', '.join(pain_radiation) if pain_radiation else 'No radiation'
+        
+        hpc_section = general_hpc_section + f"""
+        <div class="section">
+            <h2>Additional Chest Pain Details</h2>
+            <div class="field">
+                <span class="label">When did the pain start:</span>
+                <span class="value">{pain_start_date if pain_start_date else 'Not specified'} {f'at {pain_start_time}' if pain_start_time else ''}</span>
+            </div>
+            <div class="field">
+                <span class="label">Site of Pain:</span>
+                <span class="value">{pain_site_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Onset:</span>
+                <span class="value">{pain_onset if pain_onset else 'Not specified'}</span>
+            </div>
+            <div class="field">
+                <span class="label">Character of Pain:</span>
+                <span class="value">{pain_character_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Radiation:</span>
+                <span class="value">{pain_radiation_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Timing:</span>
+                <span class="value">{pain_timing if pain_timing else 'Not specified'}</span>
+            </div>
+            <div class="field">
+                <span class="label">Severity (0-10):</span>
+                <span class="value">{pain_severity}/10</span>
+            </div>
+            <div class="field">
+                <span class="label">Exacerbating Factors:</span>
+                <span class="value">{pain_exacerbating if pain_exacerbating else 'None reported'}</span>
+            </div>
+            <div class="field">
+                <span class="label">Relieving Factors:</span>
+                <span class="value">{pain_relieving if pain_relieving else 'None reported'}</span>
+            </div>
+        </div>
+        """
+    else:
+        other_complaint_detail_str = other_complaint_detail if other_complaint_detail else 'No additional details provided'
+        hpc_section = general_hpc_section + f"""
+        <div class="section">
+            <h2>Additional Details</h2>
+            <div class="field">
+                <span class="value">{other_complaint_detail_str}</span>
+            </div>
+        </div>
+        """
+    
+    # Build recreational drugs detail section
+    recreational_drugs_detail_section = ""
+    if recreational_drugs == "Yes" and recreational_drugs_detail:
+        recreational_drugs_detail_section = f"""
+            <div class="field">
+                <span class="label">Recreational Drug Details:</span>
+                <span class="value">{recreational_drugs_detail}</span>
+            </div>
+        """
+    
+    # Build the complete HTML using f-string
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    html_content = f"""
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+            .section {{ margin: 20px 0; padding: 15px; border-left: 4px solid #1f77b4; background-color: #f9f9f9; }}
+            .section h2 {{ color: #1f77b4; margin-top: 0; }}
+            .field {{ margin: 10px 0; }}
+            .label {{ font-weight: bold; color: #1f77b4; }}
+            .value {{ margin-left: 10px; }}
+            hr {{ border: none; border-top: 2px solid #1f77b4; margin: 30px 0; }}
+        </style>
+    </head>
+    <body>
+        <h1>Patient Medical History Form</h1>
+        <p>Submitted: {timestamp}</p>
+        <hr>
+        
+        <div class="section">
+            <h2>Basic Information</h2>
+            <div class="field">
+                <span class="label">Name:</span>
+                <span class="value">{patient_name}</span>
+            </div>
+            <div class="field">
+                <span class="label">Date of Birth:</span>
+                <span class="value">{patient_dob}</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Chief Complaint</h2>
+            <div class="field">
+                <span class="label">Presenting Complaint:</span>
+                <span class="value">{presenting_complaint}</span>
+            </div>
+        </div>
+        
+        {hpc_section}
+        
+        <div class="section">
+            <h2>Systems Review</h2>
+            <div class="field">
+                <span class="label">Fever:</span>
+                <span class="value">{fever_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Cough/Cold Symptoms:</span>
+                <span class="value">{cough_cold_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Unwell Contacts:</span>
+                <span class="value">{unwell_contacts_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Shortness of Breath:</span>
+                <span class="value">{sob_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Calf Pain:</span>
+                <span class="value">{calf_pain_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Recent Surgery:</span>
+                <span class="value">{recent_surgery_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Recent Travel:</span>
+                <span class="value">{travel_history_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Haemoptysis (Coughing up blood):</span>
+                <span class="value">{haemoptysis_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">History of Cancer:</span>
+                <span class="value">{malignancy_history_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Previous Blood Clot (DVT/PE):</span>
+                <span class="value">{prev_vte_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Difficulty Breathing When Lying Flat:</span>
+                <span class="value">{orthopnea_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Abdominal Pain:</span>
+                <span class="value">{abdominal_pain_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Vomiting:</span>
+                <span class="value">{vomiting_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Loss of Consciousness:</span>
+                <span class="value">{loss_consciousness_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Dizziness:</span>
+                <span class="value">{dizziness_str}</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Past Medical History</h2>
+            <div class="field">
+                <span class="value">{pmh_str}</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Current Medications</h2>
+            <div class="field">
+                <span class="value">{drug_history_str}</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Drug Allergies</h2>
+            <div class="field">
+                <span class="value">{drug_allergies}</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Family History</h2>
+            <div class="field">
+                <span class="label">Family History of Heart Attack:</span>
+                <span class="value">{family_heart_attack_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Family History of Stroke:</span>
+                <span class="value">{family_stroke_str}</span>
+            </div>
+            <div class="field">
+                <span class="label">Additional Family History:</span>
+                <span class="value">{family_history_detail_str}</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Social History</h2>
+            <div class="field">
+                <span class="label">Smoking Status:</span>
+                <span class="value">{smoking_status}</span>
+            </div>
+            <div class="field">
+                <span class="label">Alcohol Use:</span>
+                <span class="value">{alcohol_use}</span>
+            </div>
+            <div class="field">
+                <span class="label">Recreational Drug Use:</span>
+                <span class="value">{recreational_drugs}</span>
+            </div>
+            {recreational_drugs_detail_section}
+        </div>
+        
+        <div class="section">
+            <h2>Additional Information</h2>
+            <div class="field">
+                <span class="value">{additional_info_str}</span>
+            </div>
+        </div>
+        
+        <hr>
+        <p style="font-size: 12px; color: #666; text-align: center;">
+            This form was generated automatically by the Patient History Information Tool.
+        </p>
+    </body>
+    </html>
+    """
+    
+    return html_content
+
+
+def send_email(receiving_email, form_data, patient_email=None):
+    """Send form data via email"""
+    try:
+        # Email configuration - Update these with your email settings
+        sender_email = st.secrets.get("SENDER_EMAIL", "")
+        sender_password = st.secrets.get("SENDER_PASSWORD", "")
+        smtp_server = st.secrets.get("SMTP_SERVER", "smtp.gmail.com")
+        smtp_port = st.secrets.get("SMTP_PORT", 587)
+        
+        # Check if email configuration is available
+        if not sender_email or not sender_password:
+            st.error("Email configuration not found. Please set up email credentials in secrets.")
+            st.info("To set up email, add SENDER_EMAIL, SENDER_PASSWORD, SMTP_SERVER, and SMTP_PORT to .streamlit/secrets.toml")
+            return False
+        
+        # Create message
+        message = MIMEMultipart("alternative")
+        message["Subject"] = "Patient Medical History Form Submission"
+        message["From"] = sender_email
+        message["To"] = receiving_email
+        
+        # Attach HTML content
+        part = MIMEText(form_data, "html")
+        message.attach(part)
+        
+        # Send email
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, receiving_email, message.as_string())
+        
+        # Send copy to patient if requested
+        if patient_email and patient_email.strip() != "":
+            message_copy = MIMEMultipart("alternative")
+            message_copy["Subject"] = "Your Patient Medical History Form - Copy"
+            message_copy["From"] = sender_email
+            message_copy["To"] = patient_email
+            
+            part_copy = MIMEText(form_data, "html")
+            message_copy.attach(part_copy)
+            
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.sendmail(sender_email, patient_email, message_copy.as_string())
+        
+        return True
+    
+    except Exception as e:
+        st.error(f"Error sending email: {str(e)}")
+        return False
+
+# ========== END FUNCTION DEFINITIONS ==========
+
 # Header
 st.markdown("<h1 class='main-header'>🏥 Patient Medical History Form</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #666;'>Please complete this form with as much detail as possible. Your information helps us provide better care.</p>", unsafe_allow_html=True)
@@ -448,374 +818,3 @@ with form:
                     st.info(f"Your form has been sent to: {receiving_email}")
                 else:
                     st.error("❌ Error sending form. Please check email configuration.")
-
-
-def prepare_form_data(patient_name, patient_dob, presenting_complaint,
-                     hpc_when_started, hpc_progression, hpc_severity, hpc_triggers, hpc_relieving, hpc_associated,
-                     pain_start_date, pain_start_time, pain_site, pain_onset,
-                     pain_character, pain_radiation, pain_timing, pain_severity,
-                     pain_exacerbating, pain_relieving, other_complaint_detail,
-                     fever, cough_cold, unwell_contacts, sob, calf_pain, recent_surgery,
-                     travel_history, haemoptysis, malignancy_history, prev_vte, orthopnea,
-                     abdominal_pain, vomiting, loss_consciousness, dizziness,
-                     pmh, drug_history, drug_allergies, family_heart_attack, family_stroke,
-                     family_history_detail, smoking_status, alcohol_use, recreational_drugs,
-                     recreational_drugs_detail, additional_info):
-    """Prepare form data as formatted HTML"""
-    
-    html_content = """
-    <html>
-    <head>
-        <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .section { margin: 20px 0; padding: 15px; border-left: 4px solid #1f77b4; background-color: #f9f9f9; }
-            .section h2 { color: #1f77b4; margin-top: 0; }
-            .field { margin: 10px 0; }
-            .label { font-weight: bold; color: #1f77b4; }
-            .value { margin-left: 10px; }
-            hr { border: none; border-top: 2px solid #1f77b4; margin: 30px 0; }
-        </style>
-    </head>
-    <body>
-        <h1>Patient Medical History Form</h1>
-        <p>Submitted: {timestamp}</p>
-        <hr>
-        
-        <div class="section">
-            <h2>Basic Information</h2>
-            <div class="field">
-                <span class="label">Name:</span>
-                <span class="value">{patient_name}</span>
-            </div>
-            <div class="field">
-                <span class="label">Date of Birth:</span>
-                <span class="value">{patient_dob}</span>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>Chief Complaint</h2>
-            <div class="field">
-                <span class="label">Presenting Complaint:</span>
-                <span class="value">{presenting_complaint}</span>
-            </div>
-        </div>
-        
-        {hpc_section}
-        
-        <div class="section">
-            <h2>Systems Review</h2>
-            <div class="field">
-                <span class="label">Fever:</span>
-                <span class="value">{'Yes' if fever else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Cough/Cold Symptoms:</span>
-                <span class="value">{'Yes' if cough_cold else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Unwell Contacts:</span>
-                <span class="value">{'Yes' if unwell_contacts else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Shortness of Breath:</span>
-                <span class="value">{'Yes' if sob else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Calf Pain:</span>
-                <span class="value">{'Yes' if calf_pain else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Recent Surgery:</span>
-                <span class="value">{'Yes' if recent_surgery else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Recent Travel:</span>
-                <span class="value">{'Yes' if travel_history else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Haemoptysis (Coughing up blood):</span>
-                <span class="value">{'Yes' if haemoptysis else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">History of Cancer:</span>
-                <span class="value">{'Yes' if malignancy_history else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Previous Blood Clot (DVT/PE):</span>
-                <span class="value">{'Yes' if prev_vte else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Difficulty Breathing When Lying Flat:</span>
-                <span class="value">{'Yes' if orthopnea else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Abdominal Pain:</span>
-                <span class="value">{'Yes' if abdominal_pain else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Vomiting:</span>
-                <span class="value">{'Yes' if vomiting else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Loss of Consciousness:</span>
-                <span class="value">{'Yes' if loss_consciousness else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Dizziness:</span>
-                <span class="value">{'Yes' if dizziness else 'No'}</span>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>Past Medical History</h2>
-            <div class="field">
-                <span class="value">{pmh if pmh else 'None reported'}</span>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>Current Medications</h2>
-            <div class="field">
-                <span class="value">{drug_history if drug_history else 'None reported'}</span>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>Drug Allergies</h2>
-            <div class="field">
-                <span class="value">{drug_allergies}</span>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>Family History</h2>
-            <div class="field">
-                <span class="label">Family History of Heart Attack:</span>
-                <span class="value">{'Yes' if family_heart_attack else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Family History of Stroke:</span>
-                <span class="value">{'Yes' if family_stroke else 'No'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Additional Family History:</span>
-                <span class="value">{family_history_detail if family_history_detail else 'None reported'}</span>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>Social History</h2>
-            <div class="field">
-                <span class="label">Smoking Status:</span>
-                <span class="value">{smoking_status}</span>
-            </div>
-            <div class="field">
-                <span class="label">Alcohol Use:</span>
-                <span class="value">{alcohol_use}</span>
-            </div>
-            <div class="field">
-                <span class="label">Recreational Drug Use:</span>
-                <span class="value">{recreational_drugs}</span>
-            </div>
-            {recreational_drugs_detail_section}
-        </div>
-        
-        <div class="section">
-            <h2>Additional Information</h2>
-            <div class="field">
-                <span class="value">{additional_info if additional_info else 'None provided'}</span>
-            </div>
-        </div>
-        
-        <hr>
-        <p style="font-size: 12px; color: #666; text-align: center;">
-            This form was generated automatically by the Patient History Information Tool.
-        </p>
-    </body>
-    </html>
-    """
-    
-    # Build HPC section based on complaint type
-    # First, add the general HPC questions
-    general_hpc_section = f"""
-    <div class="section">
-        <h2>History of Your Complaint</h2>
-        <div class="field">
-            <span class="label">When did it start?</span>
-            <span class="value">{hpc_when_started if hpc_when_started else 'Not specified'}</span>
-        </div>
-        <div class="field">
-            <span class="label">How has it progressed?</span>
-            <span class="value">{hpc_progression if hpc_progression else 'Not specified'}</span>
-        </div>
-        <div class="field">
-            <span class="label">Severity:</span>
-            <span class="value">{hpc_severity if hpc_severity else 'Not specified'}</span>
-        </div>
-        <div class="field">
-            <span class="label">What makes it worse?</span>
-            <span class="value">{hpc_triggers if hpc_triggers else 'Not specified'}</span>
-        </div>
-        <div class="field">
-            <span class="label">What makes it better?</span>
-            <span class="value">{hpc_relieving if hpc_relieving else 'Not specified'}</span>
-        </div>
-        <div class="field">
-            <span class="label">Associated symptoms?</span>
-            <span class="value">{hpc_associated if hpc_associated else 'None reported'}</span>
-        </div>
-    </div>
-    """
-    
-    # Then add specific questions for chest pain if applicable
-    if presenting_complaint == "Chest Pain":
-        hpc_section = general_hpc_section + f"""
-        <div class="section">
-            <h2>Additional Chest Pain Details</h2>
-            <div class="field">
-                <span class="label">When did the pain start:</span>
-                <span class="value">{pain_start_date if pain_start_date else 'Not specified'} {f'at {pain_start_time}' if pain_start_time else ''}</span>
-            </div>
-            <div class="field">
-                <span class="label">Site of Pain:</span>
-                <span class="value">{', '.join(pain_site) if pain_site else 'Not specified'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Onset:</span>
-                <span class="value">{pain_onset if pain_onset else 'Not specified'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Character of Pain:</span>
-                <span class="value">{', '.join(pain_character) if pain_character else 'Not specified'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Radiation:</span>
-                <span class="value">{', '.join(pain_radiation) if pain_radiation else 'No radiation'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Timing:</span>
-                <span class="value">{pain_timing if pain_timing else 'Not specified'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Severity (0-10):</span>
-                <span class="value">{pain_severity}/10</span>
-            </div>
-            <div class="field">
-                <span class="label">Exacerbating Factors:</span>
-                <span class="value">{pain_exacerbating if pain_exacerbating else 'None reported'}</span>
-            </div>
-            <div class="field">
-                <span class="label">Relieving Factors:</span>
-                <span class="value">{pain_relieving if pain_relieving else 'None reported'}</span>
-            </div>
-        </div>
-        """
-    else:
-        # For other complaint types, just use the general HPC section
-        hpc_section = general_hpc_section + f"""
-        <div class="section">
-            <h2>Additional Details</h2>
-            <div class="field">
-                <span class="value">{other_complaint_detail if other_complaint_detail else 'No additional details provided'}</span>
-            </div>
-        </div>
-        """
-    
-    recreational_drugs_detail_section = ""
-    if recreational_drugs == "Yes" and recreational_drugs_detail:
-        recreational_drugs_detail_section = f"""
-            <div class="field">
-                <span class="label">Recreational Drug Details:</span>
-                <span class="value">{recreational_drugs_detail}</span>
-            </div>
-        """
-    
-    html_content = html_content.format(
-        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        patient_name=patient_name,
-        patient_dob=patient_dob,
-        presenting_complaint=presenting_complaint,
-        hpc_section=hpc_section,
-        fever=fever,
-        cough_cold=cough_cold,
-        unwell_contacts=unwell_contacts,
-        sob=sob,
-        calf_pain=calf_pain,
-        recent_surgery=recent_surgery,
-        travel_history=travel_history,
-        haemoptysis=haemoptysis,
-        malignancy_history=malignancy_history,
-        prev_vte=prev_vte,
-        orthopnea=orthopnea,
-        abdominal_pain=abdominal_pain,
-        vomiting=vomiting,
-        loss_consciousness=loss_consciousness,
-        dizziness=dizziness,
-        pmh=pmh,
-        drug_history=drug_history,
-        drug_allergies=drug_allergies,
-        family_heart_attack=family_heart_attack,
-        family_stroke=family_stroke,
-        family_history_detail=family_history_detail,
-        smoking_status=smoking_status,
-        alcohol_use=alcohol_use,
-        recreational_drugs=recreational_drugs,
-        recreational_drugs_detail_section=recreational_drugs_detail_section,
-        additional_info=additional_info
-    )
-    
-    return html_content
-
-
-def send_email(receiving_email, form_data, patient_email=None):
-    """Send form data via email"""
-    try:
-        # Email configuration - Update these with your email settings
-        sender_email = st.secrets.get("SENDER_EMAIL", "")
-        sender_password = st.secrets.get("SENDER_PASSWORD", "")
-        smtp_server = st.secrets.get("SMTP_SERVER", "smtp.gmail.com")
-        smtp_port = st.secrets.get("SMTP_PORT", 587)
-        
-        # Check if email configuration is available
-        if not sender_email or not sender_password:
-            st.error("Email configuration not found. Please set up email credentials in secrets.")
-            st.info("To set up email, add SENDER_EMAIL, SENDER_PASSWORD, SMTP_SERVER, and SMTP_PORT to .streamlit/secrets.toml")
-            return False
-        
-        # Create message
-        message = MIMEMultipart("alternative")
-        message["Subject"] = "Patient Medical History Form Submission"
-        message["From"] = sender_email
-        message["To"] = receiving_email
-        
-        # Attach HTML content
-        part = MIMEText(form_data, "html")
-        message.attach(part)
-        
-        # Send email
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, receiving_email, message.as_string())
-        
-        # Send copy to patient if requested
-        if patient_email and patient_email.strip() != "":
-            message_copy = MIMEMultipart("alternative")
-            message_copy["Subject"] = "Your Patient Medical History Form - Copy"
-            message_copy["From"] = sender_email
-            message_copy["To"] = patient_email
-            
-            part_copy = MIMEText(form_data, "html")
-            message_copy.attach(part_copy)
-            
-            with smtplib.SMTP(smtp_server, smtp_port) as server:
-                server.starttls()
-                server.login(sender_email, sender_password)
-                server.sendmail(sender_email, patient_email, message_copy.as_string())
-        
-        return True
-    
-    except Exception as e:
-        st.error(f"Error sending email: {str(e)}")
-        return False
