@@ -79,7 +79,51 @@ with form:
         help="Please select your main complaint from the list"
     )
 
-    # ========== HISTORY OF PRESENTING COMPLAINT ==========
+    # ========== HISTORY OF PRESENTING COMPLAINT - TEXT INPUT BOXES ==========
+    st.markdown("<div class='section-header'><h2>📝 History of Your Complaint</h2></div>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 14px; color: #666;'>Please answer the following questions about your complaint:</p>", unsafe_allow_html=True)
+    
+    hpc_when_started = st.text_input(
+        "When did it start? (e.g., today, 3 days ago, last week)",
+        placeholder="Describe when your symptoms started...",
+        help="Tell us when you first noticed this symptom"
+    )
+    
+    hpc_progression = st.text_area(
+        "How has it progressed? (e.g., getting better, getting worse, staying the same)",
+        placeholder="Describe how your symptom has changed since it started...",
+        height=70,
+        help="Has your symptom changed since it started?"
+    )
+    
+    hpc_severity = st.text_input(
+        "How severe is it? (1-10, where 1 is mild and 10 is severe)",
+        placeholder="Rate your symptom severity...",
+        help="Give it a severity rating"
+    )
+    
+    hpc_triggers = st.text_area(
+        "What makes it worse? (e.g., movement, food, stress, position)",
+        placeholder="Describe anything that makes your symptom worse...",
+        height=70,
+        help="What triggers or worsens your symptom?"
+    )
+    
+    hpc_relieving = st.text_area(
+        "What makes it better? (e.g., rest, medication, position changes)",
+        placeholder="Describe anything that helps your symptom...",
+        height=70,
+        help="What helps improve your symptom?"
+    )
+    
+    hpc_associated = st.text_area(
+        "Are there any other symptoms associated with this? (e.g., fever, nausea, sweating)",
+        placeholder="Describe any other symptoms you're experiencing...",
+        height=70,
+        help="Are there any other symptoms happening at the same time?"
+    )
+
+    # ========== SPECIFIC QUESTIONS FOR CHEST PAIN ==========
     if presenting_complaint == "Chest Pain":
         st.markdown("<div class='section-header'><h2>💔 History of Chest Pain</h2></div>", unsafe_allow_html=True)
         
@@ -372,6 +416,7 @@ with form:
             # Prepare form data
             form_data = prepare_form_data(
                 patient_name, patient_dob, presenting_complaint,
+                hpc_when_started, hpc_progression, hpc_severity, hpc_triggers, hpc_relieving, hpc_associated,
                 pain_start_date if presenting_complaint == "Chest Pain" else None,
                 pain_start_time if presenting_complaint == "Chest Pain" else None,
                 pain_site if presenting_complaint == "Chest Pain" else None,
@@ -403,6 +448,7 @@ with form:
 
 
 def prepare_form_data(patient_name, patient_dob, presenting_complaint,
+                     hpc_when_started, hpc_progression, hpc_severity, hpc_triggers, hpc_relieving, hpc_associated,
                      pain_start_date, pain_start_time, pain_site, pain_onset,
                      pain_character, pain_radiation, pain_timing, pain_severity,
                      pain_exacerbating, pain_relieving, other_complaint_detail,
@@ -588,10 +634,42 @@ def prepare_form_data(patient_name, patient_dob, presenting_complaint,
     """
     
     # Build HPC section based on complaint type
+    # First, add the general HPC questions
+    general_hpc_section = f"""
+    <div class="section">
+        <h2>History of Your Complaint</h2>
+        <div class="field">
+            <span class="label">When did it start?</span>
+            <span class="value">{hpc_when_started if hpc_when_started else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">How has it progressed?</span>
+            <span class="value">{hpc_progression if hpc_progression else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">Severity:</span>
+            <span class="value">{hpc_severity if hpc_severity else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">What makes it worse?</span>
+            <span class="value">{hpc_triggers if hpc_triggers else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">What makes it better?</span>
+            <span class="value">{hpc_relieving if hpc_relieving else 'Not specified'}</span>
+        </div>
+        <div class="field">
+            <span class="label">Associated symptoms?</span>
+            <span class="value">{hpc_associated if hpc_associated else 'None reported'}</span>
+        </div>
+    </div>
+    """
+    
+    # Then add specific questions for chest pain if applicable
     if presenting_complaint == "Chest Pain":
-        hpc_section = f"""
+        hpc_section = general_hpc_section + f"""
         <div class="section">
-            <h2>History of Chest Pain</h2>
+            <h2>Additional Chest Pain Details</h2>
             <div class="field">
                 <span class="label">When did the pain start:</span>
                 <span class="value">{pain_start_date if pain_start_date else 'Not specified'} {f'at {pain_start_time}' if pain_start_time else ''}</span>
@@ -631,11 +709,12 @@ def prepare_form_data(patient_name, patient_dob, presenting_complaint,
         </div>
         """
     else:
-        hpc_section = f"""
+        # For other complaint types, just use the general HPC section
+        hpc_section = general_hpc_section + f"""
         <div class="section">
-            <h2>History of Complaint</h2>
+            <h2>Additional Details</h2>
             <div class="field">
-                <span class="value">{other_complaint_detail if other_complaint_detail else 'No details provided'}</span>
+                <span class="value">{other_complaint_detail if other_complaint_detail else 'No additional details provided'}</span>
             </div>
         </div>
         """
