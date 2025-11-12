@@ -18,7 +18,7 @@ st.markdown("""
     <style>
     .main-header {
         text-align: center;
-        color: #1f77b4;
+        color: #000000;
         margin-bottom: 30px;
     }
     .section-header {
@@ -28,6 +28,9 @@ st.markdown("""
         margin-top: 20px;
         margin-bottom: 15px;
         border-radius: 5px;
+    }
+    .section-header h2 {
+        color: #000000;
     }
     .required-field {
         color: red;
